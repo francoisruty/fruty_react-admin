@@ -67,13 +67,13 @@ app.put('/api/items/:item_id', function(req, res) {
 });
 
 app.post('/api/items', function(req, res) {
-  const text = `INSERT INTO items (id, title, description) VALUES(Default, $1, $2)`;
+  const text = `INSERT INTO items (id, title, description) VALUES(Default, $1, $2) RETURNING *`;
   const values = [req.body.title, req.body.description];
   client.query(text, values, (err, results) => {
     if (err) {
-      res.json({data: []});
+      res.json({});
     } else {
-      res.json({data: results.rows});
+      res.json(results.rows[0]);
     }
   });
 });
@@ -81,12 +81,12 @@ app.post('/api/items', function(req, res) {
 app.delete('/api/items/:item_id', function(req, res) {
   const text = `DELETE
   FROM items WHERE id=$1`;
-  const values = [req.item_id];
+  const values = [req.params.item_id];
   client.query(text, values, (err, results) => {
     if (err) {
-      res.json({data: []});
+      res.json({});
     } else {
-      res.json({data: results.rows});
+      res.json({id: req.params.item_id});
     }
   });
 });
