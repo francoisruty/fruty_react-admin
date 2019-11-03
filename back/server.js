@@ -25,6 +25,7 @@ app.use(function(req, res, next) {
     next();
 });
 
+//NOTE: for react-admin, we must send an array directly in response, not an array wrapped in an object
 app.get('/api/items', function(req, res) {
   const text = `SELECT *
   FROM items`;
@@ -43,12 +44,24 @@ app.get('/api/items', function(req, res) {
 app.get('/api/items/:item_id', function(req, res) {
   const text = `SELECT *
   FROM items WHERE id=$1`;
-  const values = [req.item_id];
+  const values = [req.params.item_id];
   client.query(text, values, (err, results) => {
     if (err) {
-      res.json({data: []});
+      res.json({data: {}});
     } else {
-      res.json({data: results.rows});
+      res.json(results.rows[0]);
+    }
+  });
+});
+
+app.put('/api/items/:item_id', function(req, res) {
+  const text = `UPDATE items SET title=$2, description=$3 WHERE id=$1`;
+  const values = [req.params.item_id, req.body.title, req.body.description];
+  client.query(text, values, (err, results) => {
+    if (err) {
+      res.json({});
+    } else {
+      res.json(req.body);
     }
   });
 });
