@@ -1,0 +1,60 @@
+version: '2'
+services:
+
+  nginx-front:
+    image: nginx:stable
+    ports:
+      - "3000:80"
+    volumes:
+      - ./nginx-front.conf:/etc/nginx/nginx.conf
+    links:
+      - front
+      - back
+
+  front:
+    image: node:10-alpine
+    command: ["/bin/sh", "-c","cd /home/app && npm run start"]
+    ports:
+      - "3001:3000"
+    environment:
+      REACT_EDITOR: atom
+    volumes:
+     - ./front:/home/app
+
+  back:
+    image: node:10-alpine
+    command: ["/bin/sh", "-c","cd /home/app && npm run dev"]
+    volumes:
+     - ./back:/home/app
+    environment:
+      PGUSER: ${PG_USER}
+      PGPASSWORD: ${PG_PASSWORD}
+      PGDATABASE: ${PG_DATABASE}
+      PGHOST: postgres
+    links:
+      - postgres
+
+
+  postgres:
+    image: postgres:9.6
+    environment:
+      POSTGRES_DB: ${PG_DATABASE}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+    volumes:
+      - data:/var/lib/postgresql/data
+      - ./db:/init
+
+  pgweb:
+    image: sosedoff/pgweb
+    command: pgweb --readonly --bind=0.0.0.0 --listen=8081
+    ports: ["5000:8081"]
+    links:
+      - postgres:postgres
+    environment:
+      - DATABASE_URL=postgres://${PG_USER}:${PG_PASSWORD}@postgres:5432/${PG_DATABASE}?sslmode=disable
+    depends_on:
+      - postgres
+
+volumes:
+  data: {}

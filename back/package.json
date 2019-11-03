@@ -1,0 +1,24 @@
+{
+  "name": "test",
+  "version": "0.0.0",
+  "description": "Sample",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "author": "fruty",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.1",
+    "dotenv": "^4.0.0",
+    "express": "^4.14.0",
+    "express-jwt": "^5.1.0",
+    "express-jwt-authz": "^1.0.0",
+    "nodemon": "^1.19.1",
+    "pg": "^7.10.0",
+    "request": "^2.88.0",
+    "flatted": "^2.0.1"
+  }
+}
