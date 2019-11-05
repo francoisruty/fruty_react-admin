@@ -47,7 +47,7 @@ app.get('/api/items/:item_id', function(req, res) {
   const values = [req.params.item_id];
   client.query(text, values, (err, results) => {
     if (err) {
-      res.json({data: {}});
+      res.json({});
     } else {
       res.json(results.rows[0]);
     }
