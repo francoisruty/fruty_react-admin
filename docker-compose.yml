@@ -12,7 +12,7 @@ services:
       - back
 
   front:
-    image: node:10-alpine
+    image: node:10
     command: ["/bin/sh", "-c","cd /home/app && npm run start"]
     ports:
       - "3001:3000"
@@ -22,7 +22,7 @@ services:
      - ./front:/home/app
 
   back:
-    image: node:10-alpine
+    image: node:10
     command: ["/bin/sh", "-c","cd /home/app && npm run dev"]
     volumes:
      - ./back:/home/app

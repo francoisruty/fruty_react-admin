@@ -1,13 +1,24 @@
 // in src/App.js
 import React from 'react';
-import { Admin, Resource} from 'react-admin';
+import {fetchUtils, Admin, Resource} from 'react-admin';
 import { ItemList, ItemEdit, ItemCreate } from './items';
+import authProvider from './authProvider';
 
 import simpleRestProvider from 'ra-data-simple-rest';
 
-const dataProvider = simpleRestProvider(window.location.origin + '/api');
+const httpClient = (url, options = {}) => {
+    if (!options.headers) {
+        options.headers = new Headers({ Accept: 'application/json' });
+    }
+    const token = localStorage.getItem('token');
+    options.headers.set('Authorization', `Bearer ${token}`);
+    return fetchUtils.fetchJson(url, options);
+}
+
+const dataProvider = simpleRestProvider(window.location.origin + '/api', httpClient);
+
 const App = () => (
-  <Admin dataProvider={dataProvider}>
+  <Admin dataProvider={dataProvider} authProvider={authProvider}>
     <Resource name="items" list={ItemList} edit={ItemEdit} create={ItemCreate} />
   </Admin>
 );

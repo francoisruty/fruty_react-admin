@@ -10,6 +10,8 @@ const client = new Client()
 client.connect()
 const fs = require('fs');
 const {parse, stringify} = require('flatted/cjs');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 
 const corsOptions =  {
@@ -23,6 +25,51 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.header("Access-Control-Expose-Headers", "X-Total-Count, Content-Range");
     next();
+});
+
+app.post('/api/create_user', function(req, res) {
+  var username = req.body.username;
+  var password = req.body.password;
+  bcrypt.hash(password, saltRounds, function(err, hash) {
+    // Store hash in your password DB.
+    const text = `INSERT INTO creds (id, username, hash_pwd, token) VALUES(Default, $1, $2, '') RETURNING *`;
+    const values = [req.body.username, hash];
+    client.query(text, values, (err, results) => {
+      if (err) {
+        res.json({"result": "error with DB insertion"});
+      } else {
+        res.json({"result": "user created."});
+      }
+    });//end of db insert callback
+  }); //end of bcrypt callback
+
+});
+
+app.post('/api/authenticate', function(req, res) {
+  var username = req.body.username;
+  var password = req.body.password;
+
+  const text = `SELECT hash_pwd FROM creds WHERE username=$1`;
+  const values = [req.body.username];
+  client.query(text, values, (err, results) => {
+    if (err) {
+      console.log(err);
+      res.send(401);
+    } else {
+      var hash = results.rows[0]['hash_pwd'];
+      //console.log(hash);
+      //console.log(password);
+      bcrypt.compare(password, hash, function(err, result) {
+        //console.log(result);
+        if (result == true) {
+          res.json({"result": "OK"});
+        } else {
+          res.send(401);
+        }
+      }); //end of hash compare callback
+    }
+  });//end of db select callback
+
 });
 
 //NOTE: for react-admin, we must send an array directly in response, not an array wrapped in an object
