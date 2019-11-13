@@ -29,7 +29,7 @@ app.use(function(req, res, next) {
 
 app.use(function(req, res, next) {
     //when the front calls /api/authenticate, it doesn't have a token yet
-    if (req.path == '/api/authenticate') {
+    if (req.path == '/api/authenticate' || req.path == '/api/create_user') {
       return next();
     }
 
