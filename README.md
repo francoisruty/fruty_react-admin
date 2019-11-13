@@ -44,6 +44,9 @@ All containers should now be up, and you can go to http://localhost:3000 in your
 
 ### Verifications
 
+- you should be able to log in with the user you created.
+
+- you should be able to create, edit, and delete items.
 
 
 ### Notes
