@@ -62,7 +62,16 @@ app.post('/api/authenticate', function(req, res) {
       bcrypt.compare(password, hash, function(err, result) {
         //console.log(result);
         if (result == true) {
-          res.json({"result": "OK"});
+          var token = Date.now();
+          const text = `UPDATE creds set token = $1 WHERE username=$2`;
+          const values = [token, req.body.username];
+          client.query(text, values, (err, results) => {
+            if (err) {
+              res.send(401);
+            } else {
+              res.json({"token": token});
+            }
+          }); //end of token insertion callback
         } else {
           res.send(401);
         }
