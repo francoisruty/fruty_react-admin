@@ -27,6 +27,39 @@ app.use(function(req, res, next) {
     next();
 });
 
+app.use(function(req, res, next) {
+    //when the front calls /api/authenticate, it doesn't have a token yet
+    if (req.path == '/api/authenticate') {
+      return next();
+    }
+
+    var token = req.headers['authorization'];
+    if (token.startsWith('Bearer ')) {
+      // Remove Bearer from string
+      token = token.slice(7, token.length);
+    }
+    var username = req.headers['username'];
+    const text = `SELECT token FROM creds WHERE username = $1`;
+    const values = [username];
+    client.query(text, values, (err, results) => {
+      if (err) {
+        console.log(err);
+        res.send(401);
+      } else {
+        if (results.rows.length == 0) {
+          res.send(401);
+        }
+        var db_token = results.rows[0]['token'];
+        if (db_token !== token) {
+          res.send(401);
+        } else {
+          return next();
+        }
+      }
+    });//end of db check callback
+
+});
+
 app.post('/api/create_user', function(req, res) {
   var username = req.body.username;
   var password = req.body.password;
