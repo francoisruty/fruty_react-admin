@@ -1,7 +1,7 @@
 
 ### Procedure
 
-- git clone repo and cf into it
+- git clone repo and cd into it
 
 - docker-compose up -d
 
