@@ -121,8 +121,8 @@ app.get('/api/items', function(req, res) {
   const values = [];
   client.query(text, values, (err, results) => {
     if (err) {
-      res.setHeader('Content-Range', 'items 0-0/0');
-      res.json([]);
+      console.log(err);
+      res.sendStatus(500);
     } else {
       res.setHeader('Content-Range', '0-' + results.rows.length + '/' + results.rows.length);
       res.json(results.rows);
@@ -136,7 +136,8 @@ app.get('/api/items/:item_id', function(req, res) {
   const values = [req.params.item_id];
   client.query(text, values, (err, results) => {
     if (err) {
-      res.json({});
+      console.log(err);
+      res.sendStatus(500);
     } else {
       res.json(results.rows[0]);
     }
@@ -148,7 +149,8 @@ app.put('/api/items/:item_id', function(req, res) {
   const values = [req.params.item_id, req.body.title, req.body.description];
   client.query(text, values, (err, results) => {
     if (err) {
-      res.json({});
+      console.log(err);
+      res.sendStatus(500);
     } else {
       res.json(req.body);
     }
@@ -160,7 +162,8 @@ app.post('/api/items', function(req, res) {
   const values = [req.body.title, req.body.description];
   client.query(text, values, (err, results) => {
     if (err) {
-      res.json({});
+      console.log(err);
+      res.sendStatus(500);
     } else {
       res.json(results.rows[0]);
     }
@@ -173,7 +176,8 @@ app.delete('/api/items/:item_id', function(req, res) {
   const values = [req.params.item_id];
   client.query(text, values, (err, results) => {
     if (err) {
-      res.json({});
+      console.log(err);
+      res.sendStatus(500);
     } else {
       res.json({id: req.params.item_id});
     }
