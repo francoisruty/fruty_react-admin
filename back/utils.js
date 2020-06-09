@@ -6,6 +6,7 @@ const Clientsync = require('pg-native')
 var clientsync = new Clientsync()
 clientsync.connectSync()
 
+
 module.exports = {
   client: client,
   clientsync: clientsync

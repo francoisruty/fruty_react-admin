@@ -1,17 +1,44 @@
 const express = require('express');
-const {client, clientsync} = require('../utils');
+const {client, clientsync, rangeQuery } = require('../utils');
 const router = express.Router();
 
 //NOTE: for react-admin, we must send an array directly in response, not an array wrapped in an object
 router.get('/', function(req, res) {
 
-  var rows = clientsync.querySync(
-    `SELECT *
-    FROM items`,
-  []
-  );
+  var text = `
+  SELECT *
+  FROM items
+  `;
+  var values = []
 
-  res.setHeader('Content-Range', '0-' + rows.length + '/' + rows.length);
+  var sort = req.query.sort;
+  if (sort !== undefined) {
+    sort = JSON.parse(sort);
+    if (sort.length == 2 && sort[0] !== null && sort[1] !== null) {
+      text = text + ` ORDER BY ` + sort[0] + ` ` + sort[1];
+    }
+  }
+
+  var range = req.query.range;
+  range = JSON.parse(range);
+  nb = range[1] - range[0];
+  text = text + ' LIMIT ' + nb;
+  text = text + ' OFFSET ' + range[0];
+
+  console.log()
+
+  var rows = clientsync.querySync(text, values);
+
+  var count = clientsync.querySync(
+    `
+    SELECT COUNT(*) FROM items
+    `,
+    []
+  )[0]['count'];
+
+
+
+  res.setHeader('Content-Range', range[0] + '-' + range[1] + '/' + count);
   res.json(rows);
 
 
@@ -25,10 +52,6 @@ router.get('/:item_id', function(req, res) {
   [req.params.item_id]
   );
 
-  if (rows.length === 0) {
-    res.json({});
-    return;
-  }
   res.json(rows[0]);
 
 });
