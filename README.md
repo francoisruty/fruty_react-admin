@@ -35,7 +35,7 @@ curl -X POST \
   -H 'Content-Type: application/json' \
   -d '{
   "email": "test@test.fr",
-  "password": "test"
+  "password": "Password1"
 }'
 
 You should get:

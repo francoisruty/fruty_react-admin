@@ -1,5 +1,5 @@
 const express = require('express');
-const {client, clientsync, rangeQuery } = require('../utils');
+const {client, clientsync} = require('../utils');
 const router = express.Router();
 
 //NOTE: for react-admin, we must send an array directly in response, not an array wrapped in an object

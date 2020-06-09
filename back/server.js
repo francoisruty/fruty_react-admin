@@ -5,7 +5,7 @@ app.use(bodyParser.json()); // for parsing application/json
 const cors = require('cors');
 const request = require('request');
 require('dotenv').config();
-const {client, clientsync} = require('./utils');
+const {client, clientsync, hasUpperCase, hasLowerCase, hasNumber, ValidateEmail} = require('./utils');
 const fs = require('fs');
 const {parse, stringify} = require('flatted/cjs');
 const bcrypt = require('bcrypt');
@@ -57,8 +57,37 @@ app.use(function(req, res, next) {
 });
 
 app.post('/api/create_user', function(req, res) {
-  var email = req.body.email;
+  var email = req.body.email.toLowerCase().trim();
   var password = req.body.password;
+
+  if (password.length < 8 || !(hasUpperCase(password) && hasLowerCase(password) && hasNumber(password)) ) {
+    res.status(400).send({
+      "case": 2,
+      "message": "Le mot de passe doit contenur une minuscule, une majuscule, un chiffre, et avoir au moins 8 caractères."
+    });
+    return;
+  }
+  if (ValidateEmail(email) === false) {
+    res.status(400).send({
+      "case": 3,
+      "message": "Le format de l'email est incorrect."
+    });
+    return;
+  }
+
+  var rows = clientsync.querySync(
+    "SELECT * FROM users where email=$1",
+    [email]
+  );
+
+  if (rows.length > 0) {
+    res.status(500).send({
+      "message": "Cet email est déjà pris."
+    });
+    return;
+  }
+
+
   bcrypt.hash(password, saltRounds, function(err, hash) {
     // Store hash in your password DB.
     var rows = clientsync.querySync(
@@ -72,7 +101,7 @@ app.post('/api/create_user', function(req, res) {
 });
 
 app.post('/api/authenticate', function(req, res) {
-  var email = req.body.email;
+  var email = req.body.email.toLowerCase().trim();
   var password = req.body.password;
 
   var rows = clientsync.querySync(
