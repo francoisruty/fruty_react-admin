@@ -1,9 +1,10 @@
 
 export default {
     login: ({ username, password }) => {
+        const email = username;
         const request = new Request(window.location.origin + '/api/authenticate', {
             method: 'POST',
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({ email, password }),
             headers: new Headers({ 'Content-Type': 'application/json' }),
         });
         return fetch(request)
@@ -13,9 +14,9 @@ export default {
                 }
                 return response.json();
             })
-            .then(({ token }) => {
+            .then(({ email, token }) => {
                 localStorage.setItem('token', token);
-                localStorage.setItem('username', username);
+                localStorage.setItem('email', email);
             });
     },
     logout: () => {

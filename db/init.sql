@@ -6,7 +6,7 @@ CREATE TABLE items (
 
 CREATE TABLE users (
   id BIGSERIAL PRIMARY KEY,
-  username TEXT NOT NULL,
+  email TEXT NOT NULL,
   hash_pwd TEXT NOT NULL,
   token TEXT NOT NULL
 );

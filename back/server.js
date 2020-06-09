@@ -36,10 +36,10 @@ app.use(function(req, res, next) {
       // Remove Bearer from string
       token = token.slice(7, token.length);
     }
-    var username = req.headers['username'];
+    var email = req.headers['email'];
     var rows = clientsync.querySync(
-      `SELECT id, token FROM users WHERE username = $1`,
-    [username]
+      `SELECT id, token FROM users WHERE email = $1`,
+    [email]
     );
     if (rows.length == 0) {
       res.send(401);
@@ -57,13 +57,13 @@ app.use(function(req, res, next) {
 });
 
 app.post('/api/create_user', function(req, res) {
-  var username = req.body.username;
+  var email = req.body.email;
   var password = req.body.password;
   bcrypt.hash(password, saltRounds, function(err, hash) {
     // Store hash in your password DB.
     var rows = clientsync.querySync(
-      `INSERT INTO users (id, username, hash_pwd, token) VALUES(Default, $1, $2, '') RETURNING *`,
-    [req.body.username, hash]
+      `INSERT INTO users (id, email, hash_pwd, token) VALUES(Default, $1, $2, '') RETURNING *`,
+    [email, hash]
     );
     res.json({"result": "user created."});
 
@@ -72,12 +72,12 @@ app.post('/api/create_user', function(req, res) {
 });
 
 app.post('/api/authenticate', function(req, res) {
-  var username = req.body.username;
+  var email = req.body.email;
   var password = req.body.password;
 
   var rows = clientsync.querySync(
-    `SELECT hash_pwd FROM users WHERE username=$1`,
-  [req.body.username]
+    `SELECT hash_pwd FROM users WHERE email=$1`,
+  [email]
   );
 
   var hash = rows[0]['hash_pwd'];
@@ -87,10 +87,10 @@ app.post('/api/authenticate', function(req, res) {
     if (result == true) {
       var token = Date.now();
       var rows = clientsync.querySync(
-        `UPDATE users set token = $1 WHERE username=$2`,
-      [token, req.body.username]
+        `UPDATE users set token = $1 WHERE email=$2`,
+      [token, email]
       );
-      res.json({"token": token});
+      res.json({"token": token, "email": email});
       return;
     } else {
       res.send(401);
