@@ -20,12 +20,13 @@ router.get('/', function(req, res) {
   }
 
   var range = req.query.range;
-  range = JSON.parse(range);
-  nb = range[1] - range[0];
-  text = text + ' LIMIT ' + nb;
-  text = text + ' OFFSET ' + range[0];
+  if (range !== undefined) {
+    range = JSON.parse(range);
+    nb = range[1] - range[0];
+    text = text + ' LIMIT ' + nb;
+    text = text + ' OFFSET ' + range[0];
+  }
 
-  console.log()
 
   var rows = clientsync.querySync(text, values);
 
