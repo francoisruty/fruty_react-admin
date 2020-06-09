@@ -25,21 +25,23 @@ router.get('/', function(req, res) {
     nb = range[1] - range[0];
     text = text + ' LIMIT ' + nb;
     text = text + ' OFFSET ' + range[0];
+
+    var count = clientsync.querySync(
+      `
+      SELECT COUNT(*) FROM items
+      `,
+      []
+    )[0]['count'];
+
+    var rows = clientsync.querySync(text, values);
+    res.setHeader('Content-Range', range[0] + '-' + range[1] + '/' + count);
+
+  } else {
+    var rows = clientsync.querySync(text, values);
+    res.setHeader('Content-Range', '0-' + rows.length + '/' + rows.length);
+
   }
 
-
-  var rows = clientsync.querySync(text, values);
-
-  var count = clientsync.querySync(
-    `
-    SELECT COUNT(*) FROM items
-    `,
-    []
-  )[0]['count'];
-
-
-
-  res.setHeader('Content-Range', range[0] + '-' + range[1] + '/' + count);
   res.json(rows);
 
 
