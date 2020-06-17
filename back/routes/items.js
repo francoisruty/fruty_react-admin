@@ -22,7 +22,7 @@ router.get('/', function(req, res) {
   var range = req.query.range;
   if (range !== undefined) {
     range = JSON.parse(range);
-    nb = range[1] - range[0];
+    nb = range[1] - range[0] + 1;
     text = text + ' LIMIT ' + nb;
     text = text + ' OFFSET ' + range[0];
 
