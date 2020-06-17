@@ -9,21 +9,31 @@ Blog post: https://fruty.io/2020/01/15/building-business-apps-with-react-admin/
 Create DB table:
 
 docker-compose exec postgres /bin/bash
+
 psql --username=fruty
+
 \i /init/init.sql
+
 \q
+
 exit
 
 Install dependencies for front and back:
 
 docker-compose run front /bin/sh
+
 cd /home/app
+
 npm install
+
 exit
 
 docker-compose run back /bin/sh
+
 cd /home/app
+
 npm install
+
 exit
 
 docker-compose up -d
