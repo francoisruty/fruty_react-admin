@@ -21,6 +21,6 @@
     "pg-native": "3.0.0",
     "request": "^2.88.0",
     "flatted": "^2.0.1",
-    "bcrypt": "^3.0.6"
+    "bcrypt": "^5.0.0"
   }
 }
